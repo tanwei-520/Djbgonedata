@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="vue.js"></script>
+    <link rel="stylesheet" href="./ElementUi/index.css">
+    <script src="./ElementUi/index.js"></script>
+    <script src="./axios.min.js"></script>
+    <style type="text/css">
+       .el-table--border:after,
+       .el-table--group:after,
+       .el-table:before {
+             background-color: #C0C4CC;
+        }
+       .el-table--border,
+       .el-table--group {
+              border-color: #C0C4CC;
+        }
+       .el-table td,
+       .el-table th.is-leaf {
+              border-bottom: 2px solid #C0C4CC !important;
+        }
+       .el-table--border th,
+       .el-table--border th.gutter:last-of-type {
+              border-bottom: 2px solid #C0C4CC;
+        }
+       .el-table--border td,
+       .el-table--border th {
+              border-right: 2px solid #C0C4CC;
+       }
+    </style>
+    <title>日报</title>
+
+</head>
+<body>
+<!-- 加载动画 -->
+<div id="app"  element-loading-text="拼命加载中"  v-loading.fullscreen.lock="fullscreenLoading" >
+    <!-- <button type="button"  v-on:click="getmain" class="el-button el-button--primary">主要按钮1</button>
+    <button type="button"  v-on:click="getids" class="el-button el-button--primary">主要按钮2</button> -->
+    <p class="cell" style="text-align:center; width: 50%;margin: auto;margin-top: 20px; height: 35px;" >今日数据</p>
+    <el-table
+    :data="tableData"
+    :header-cell-style="{background:'#eef1f6',color:'#606266',textAlign:'center'}"
+    :cell-style="rowStyle"
+    stripe
+    border
+    style="width: 50%;margin: auto; text-align: center;" class="tabRowClassName">
+    <el-table-column
+      type="index"
+      label="序号"
+      width="50">
+    </el-table-column>
+    <el-table-column
+      prop="表单"
+      label="表单">
+    </el-table-column>
+    <el-table-column
+      prop="一分部"
+      label="一分部">
+    </el-table-column>
+    <el-table-column
+      prop="二分部"
+      label="二分部" :show-overflow-tooltip="true">
+    </el-table-column>
+    <el-table-column
+    prop="三分部"
+    label="三分部" :show-overflow-tooltip="true">
+  </el-table-column>
+  </el-table>
+<p style="text-align:center; width: 50%;margin: auto;margin-top: 20px; height: 35px;">昨日数据</p>
+<el-table
+:data="tableData2"
+:header-cell-style="{background:'#eef1f6',color:'#606266',textAlign:'center'}"
+:cell-style="rowStyle"
+stripe
+border
+style="width: 50%;margin: auto;  text-align: center;"  class="tabRowClassName">
+<el-table-column
+  type="index"
+  label="序号"
+  width="50">
+</el-table-column>
+<el-table-column
+  prop="表单"
+  label="表单">
+</el-table-column>
+<el-table-column
+  prop="一分部"
+  label="一分部">
+</el-table-column>
+<el-table-column
+  prop="二分部"
+  label="二分部" :show-overflow-tooltip="true">
+</el-table-column>
+<el-table-column
+prop="三分部"
+label="三分部" :show-overflow-tooltip="true">
+</el-table-column>
+</el-table>
+<p style="text-align:center; width: 50%;margin: auto;margin-top: 20px; height: 35px;">汇总统计</p>
+<textarea v-if="isshow" class="el-textarea__inner"  placeholder="请输入内容" autocomplete="off" style="min-height: 300px; height: 270px;width: 50%; margin: auto; font-size: 16px;border:2px solid #C0C4CC;">
+  各位领导，冬季保供工程数字化交付建设进展：
+  1、苏里格深度处理总厂检测数据日0条，累计0条；施工数据日0条，累计15条。
+  2、第一分项目部检测数据日{{tableData[1].一分部-tableData2[1].一分部}}条，累计{{tableData[1].一分部}}条；施工数据日{{tableData[3].一分部-tableData2[3].一分部}}条，累计{{tableData[3].一分部}}条。
+  3、第二分项目部检测数据日{{tableData[1].二分部-tableData2[1].二分部}}条，累计{{tableData[1].二分部}}条；施工数据日{{tableData[3].二分部-tableData2[3].二分部}}条，累计{{tableData[3].二分部}}条。
+  4、第三分项目部检测数据日{{tableData[1].三分部-tableData2[1].三分部}}条，累计{{tableData[1].三分部}}条；施工数据日{{tableData[3].三分部-tableData2[3].三分部}}条，累计{{tableData[3].三分部}}条。
+  总厂：当日采集：检测：0条，施工：0条，累计采集：检测：0条，施工：15条。
+  一分部：当日采集：检测：{{tableData[1].一分部-tableData2[1].一分部}}条，施工：{{tableData[3].一分部-tableData2[3].一分部}}条，累计采集：检测：{{tableData[1].一分部}}条，施工：{{tableData[3].一分部}}条。
+  二分部：当日采集：检测：{{tableData[1].二分部-tableData2[1].二分部}}条，施工：{{tableData[3].二分部-tableData2[3].二分部}}条，累计采集：检测：{{tableData[1].二分部}}条，施工：{{tableData[3].二分部}}条。
+  三分部：当日采集：检测：{{tableData[1].三分部-tableData2[1].三分部}}条，施工：{{tableData[3].三分部-tableData2[3].三分部}}条，累计采集：检测：{{tableData[1].三分部}}条，施工：{{tableData[3].三分部}}条。
+</textarea>
+</div>
+</body>
+<script>
+    var app=new Vue({
+        el:'#app',
+        data:{
+            fullscreenLoading:true,
+            isshow:false,
+            tableData:[],
+            tableData2:[],
+            dialogVisible:false,
+            Adddata:{
+              表单:'',
+              一分部:'',
+              二分部:'',
+              三分部:'',
+            }
+        },
+        methods:{
+            getmain(){//筛选及获取对象名称（未用
+              //this.dialogVisible=true;
+              const url='https://www.raywn.cn:9455/design//datacenter/ds/get-data';
+              this.tableData=[];
+              axios(
+	           {
+	               method:'post',
+	               url: url,
+	               data : this.tads,
+	           }
+	             ).then(response => { // 得到返回结果数据
+                this.tableData=response.data.data;
+                // console.log(this.tableData[0].表单)
+                // let index = this.tableData.findIndex(v=>v.表单==='焊接记录')//找索引
+                // console.log(index);
+                // var names = Object.create(null);//取对象名称
+                // this.tableData.forEach(function (o) {
+                //   Object.keys(o).forEach(function (k) {
+                //   names[k] = true;
+                //   });
+                // });
+                // this.Dname = Object.keys(names);
+                // console.log(this.Dname);
+                //this.Dname=JSON.parse(tableData);
+                this.count=response.data.count;
+                })
+            //  .catch(error => {
+            //         alert(error.msg)})
+            },
+            rowStyle(){
+                return "text-align:center"
+            },//表内容居中
+            getids(){
+              //this.dialogVisible=true;
+              const url='https://www.raywn.cn:9455/design//datacenter/ds/get-data-for-use';
+              this.tableData=[];
+              this.tableData2=[];
+            axios(
+	           {
+	               method:'post',
+	               url: url,
+	               data :'id=202207260814593978',
+	           }
+	             ).then(response => { // 得到返回结果数据
+                this.tableData=response.data.data;
+                this.Adddata.表单='施工数据',
+                this.Adddata.一分部=this.tableData[0].一分部*1+this.tableData[2].一分部*1;
+                this.Adddata.二分部=this.tableData[0].二分部*1+this.tableData[2].二分部*1;
+                this.Adddata.三分部=this.tableData[0].三分部*1+this.tableData[2].三分部*1;
+                this.tableData.push(this.Adddata);
+               })
+             axios(
+	           {
+	               method:'post',
+	               url: url,
+	               data :'id=202208191804456564',
+	           }
+	             ).then(response => { // 得到返回结果数据
+                this.tableData2=response.data.data;
+                this.Adddata=[];
+                this.Adddata.表单='施工数据',
+                this.Adddata.一分部=this.tableData2[0].一分部*1+this.tableData2[2].一分部*1;
+                this.Adddata.二分部=this.tableData2[0].二分部*1+this.tableData2[2].二分部*1;
+                this.Adddata.三分部=this.tableData2[0].三分部*1+this.tableData2[2].三分部*1;
+                this.tableData2.push(this.Adddata);
+               })
+            }
+        },
+        mounted:function(){
+            this.getids();        
+            setTimeout(() => {
+              this.isshow=!this.isshow;
+              this.fullscreenLoading=false;//关闭加载动画
+             }, 800);       
+        }
+    })
+  </script>
+</html>
