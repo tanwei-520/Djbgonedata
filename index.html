@@ -38,7 +38,7 @@
 <!-- 加载动画 -->
 <div id="app"  element-loading-text="拼命加载中"  v-loading.fullscreen.lock="fullscreenLoading" >
     <!-- <button type="button"  v-on:click="getmain" class="el-button el-button--primary">主要按钮1</button>
-    <button type="button"  v-on:click="getids" class="el-button el-button--primary">主要按钮2</button> -->
+    <button type="button"  v-on:click="$message.error('获取数据失败！');" class="el-button el-button--primary">主要按钮2</button> -->
     <p class="cell" style="text-align:center; width: 50%;margin: auto;margin-top: 20px; height: 35px;" >今日数据</p>
     <el-table
     :data="tableData"
@@ -100,16 +100,16 @@ label="三分部" :show-overflow-tooltip="true">
 </el-table-column>
 </el-table>
 <p style="text-align:center; width: 50%;margin: auto;margin-top: 20px; height: 35px;">汇总统计</p>
-<textarea v-if="isshow" class="el-textarea__inner"  placeholder="请输入内容" autocomplete="off" style="min-height: 300px; height: 270px;width: 50%; margin: auto; font-size: 16px;border:2px solid #C0C4CC;">
-  各位领导，冬季保供工程数字化交付建设进展：
-  1、苏里格深度处理总厂检测数据日0条，累计0条；施工数据日0条，累计15条。
-  2、第一分项目部检测数据日{{tableData[1].一分部-tableData2[1].一分部}}条，累计{{tableData[1].一分部}}条；施工数据日{{tableData[3].一分部-tableData2[3].一分部}}条，累计{{tableData[3].一分部}}条。
-  3、第二分项目部检测数据日{{tableData[1].二分部-tableData2[1].二分部}}条，累计{{tableData[1].二分部}}条；施工数据日{{tableData[3].二分部-tableData2[3].二分部}}条，累计{{tableData[3].二分部}}条。
-  4、第三分项目部检测数据日{{tableData[1].三分部-tableData2[1].三分部}}条，累计{{tableData[1].三分部}}条；施工数据日{{tableData[3].三分部-tableData2[3].三分部}}条，累计{{tableData[3].三分部}}条。
-  总厂：当日采集：检测：0条，施工：0条，累计采集：检测：0条，施工：15条。
-  一分部：当日采集：检测：{{tableData[1].一分部-tableData2[1].一分部}}条，施工：{{tableData[3].一分部-tableData2[3].一分部}}条，累计采集：检测：{{tableData[1].一分部}}条，施工：{{tableData[3].一分部}}条。
-  二分部：当日采集：检测：{{tableData[1].二分部-tableData2[1].二分部}}条，施工：{{tableData[3].二分部-tableData2[3].二分部}}条，累计采集：检测：{{tableData[1].二分部}}条，施工：{{tableData[3].二分部}}条。
-  三分部：当日采集：检测：{{tableData[1].三分部-tableData2[1].三分部}}条，施工：{{tableData[3].三分部-tableData2[3].三分部}}条，累计采集：检测：{{tableData[1].三分部}}条，施工：{{tableData[3].三分部}}条。
+<textarea v-if="isshow" class="el-textarea__inner"  placeholder="请输入内容" autocomplete="off" style="min-height: 258px; height: 258px;width: 50%; margin: auto; font-size: 16px;border:2px solid #C0C4CC;">
+各位领导，冬季保供工程数字化交付建设进展：
+1、苏里格深度处理总厂检测数据日0条，累计0条；施工数据日0条，累计15条。
+2、第一分项目部检测数据日{{tableData[1].一分部-tableData2[1].一分部}}条，累计{{tableData[1].一分部}}条；施工数据日{{tableData[3].一分部-tableData2[3].一分部}}条，累计{{tableData[3].一分部}}条。
+3、第二分项目部检测数据日{{tableData[1].二分部-tableData2[1].二分部}}条，累计{{tableData[1].二分部}}条；施工数据日{{tableData[3].二分部-tableData2[3].二分部}}条，累计{{tableData[3].二分部}}条。
+4、第三分项目部检测数据日{{tableData[1].三分部-tableData2[1].三分部}}条，累计{{tableData[1].三分部}}条；施工数据日{{tableData[3].三分部-tableData2[3].三分部}}条，累计{{tableData[3].三分部}}条。
+总厂：当日采集：检测：0条，施工：0条，累计采集：检测：0条，施工：15条。
+一分部：当日采集：检测：{{tableData[1].一分部-tableData2[1].一分部}}条，施工：{{tableData[3].一分部-tableData2[3].一分部}}条，累计采集：检测：{{tableData[1].一分部}}条，施工：{{tableData[3].一分部}}条。
+二分部：当日采集：检测：{{tableData[1].二分部-tableData2[1].二分部}}条，施工：{{tableData[3].二分部-tableData2[3].二分部}}条，累计采集：检测：{{tableData[1].二分部}}条，施工：{{tableData[3].二分部}}条。
+三分部：当日采集：检测：{{tableData[1].三分部-tableData2[1].三分部}}条，施工：{{tableData[3].三分部-tableData2[3].三分部}}条，累计采集：检测：{{tableData[1].三分部}}条，施工：{{tableData[3].三分部}}条。
 </textarea>
 </div>
 </body>
@@ -175,6 +175,7 @@ label="三分部" :show-overflow-tooltip="true">
 	           }
 	             ).then(response => { // 得到返回结果数据
                 this.tableData=response.data.data;
+                this.Adddata=[];
                 this.Adddata.表单='施工数据',
                 this.Adddata.一分部=this.tableData[0].一分部*1+this.tableData[2].一分部*1;
                 this.Adddata.二分部=this.tableData[0].二分部*1+this.tableData[2].二分部*1;
@@ -196,6 +197,13 @@ label="三分部" :show-overflow-tooltip="true">
                 this.Adddata.三分部=this.tableData2[0].三分部*1+this.tableData2[2].三分部*1;
                 this.tableData2.push(this.Adddata);
                })
+               .catch(error => {
+                this.$message({
+                  showClose: true,
+                  message: '获取数据失败！',
+                  type: 'error',
+                  duration:10000
+                })})
             }
         },
         mounted:function(){
