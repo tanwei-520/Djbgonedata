@@ -30,6 +30,9 @@
        .el-table--border th {
               border-right: 2px solid #C0C4CC;
        }
+       .el-table__footer-wrapper td.el-table__cell{
+        text-align: center;
+       }
     </style>
     <title>日报</title>
 
@@ -48,26 +51,11 @@
     border
     style="width: 50%;margin: auto; text-align: center;" class="tabRowClassName">
     <el-table-column
-      type="index"
-      label="序号"
-      width="50">
+    v-for="(item,index) in Dname"
+    :prop="item"
+    :key="index"
+    :label="item" :show-overflow-tooltip="true">
     </el-table-column>
-    <el-table-column
-      prop="表单"
-      label="表单">
-    </el-table-column>
-    <el-table-column
-      prop="一分部"
-      label="一分部">
-    </el-table-column>
-    <el-table-column
-      prop="二分部"
-      label="二分部" :show-overflow-tooltip="true">
-    </el-table-column>
-    <el-table-column
-    prop="三分部"
-    label="三分部" :show-overflow-tooltip="true">
-  </el-table-column>
   </el-table>
 <p style="text-align:center; width: 50%;margin: auto;margin-top: 20px; height: 35px;">昨日数据</p>
 <el-table
@@ -78,25 +66,10 @@ stripe
 border
 style="width: 50%;margin: auto;  text-align: center;"  class="tabRowClassName">
 <el-table-column
-  type="index"
-  label="序号"
-  width="50">
-</el-table-column>
-<el-table-column
-  prop="表单"
-  label="表单">
-</el-table-column>
-<el-table-column
-  prop="一分部"
-  label="一分部">
-</el-table-column>
-<el-table-column
-  prop="二分部"
-  label="二分部" :show-overflow-tooltip="true">
-</el-table-column>
-<el-table-column
-prop="三分部"
-label="三分部" :show-overflow-tooltip="true">
+v-for="(item,index) in Dname"
+:prop="item"
+:key="index"
+:label="item" :show-overflow-tooltip="true">
 </el-table-column>
 </el-table>
 <p style="text-align:center; width: 50%;margin: auto;margin-top: 20px; height: 35px;">汇总统计</p>
@@ -123,11 +96,13 @@ label="三分部" :show-overflow-tooltip="true">
             tableData2:[],
             dialogVisible:false,
             Adddata:{
+              序号:'',
               表单:'',
               一分部:'',
               二分部:'',
               三分部:'',
-            }
+            },
+            Dname:[]
         },
         methods:{
             getmain(){//筛选及获取对象名称（未用
@@ -176,12 +151,43 @@ label="三分部" :show-overflow-tooltip="true">
 	             ).then(response => { // 得到返回结果数据
                 this.tableData=response.data.data;
                 this.Adddata=[];
+                this.Adddata.序号=Object.getOwnPropertyNames(this.tableData).length-1,
+                //console.log(Object.getOwnPropertyNames(this.tableData));
                 this.Adddata.表单='施工数据',
                 this.Adddata.一分部=this.tableData[0].一分部*1+this.tableData[2].一分部*1;
                 this.Adddata.二分部=this.tableData[0].二分部*1+this.tableData[2].二分部*1;
                 this.Adddata.三分部=this.tableData[0].三分部*1+this.tableData[2].三分部*1;
                 this.tableData.push(this.Adddata);
+                var names = Object.create(null);//取对象名称
+                this.tableData.forEach(function (o) {
+                  Object.keys(o).forEach(function (k) {
+                  names[k] = true;
+                  });
+                });
+                this.Dname = Object.keys(names);
+                this.Dname.push('合计');
+                var b = [];                
+                for (var i in this.tableData){
+                  var a = {};
+                  var join = 0;
+                  for(let d in this.tableData[i]){
+                    a[d]=this.tableData[i][d];
+                  //  console.log(a[Dnas[d]]);
+                    //console.log(this.tableData2[i][d]);
+                    join=this.tableData[i].一分部*1+this.tableData[i].二分部*1+this.tableData[i].三分部*1;
+                  }
+                  a['合计']=join;
+                  b.push(a);
+               }
+               this.tableData=b;
                })
+               .catch(error => {
+                this.$message({
+                  showClose: true,
+                  message: '获取今日数据失败！',
+                  type: 'error',
+                  duration:10000
+                })})
              axios(
 	           {
 	               method:'post',
@@ -191,18 +197,33 @@ label="三分部" :show-overflow-tooltip="true">
 	             ).then(response => { // 得到返回结果数据
                 this.tableData2=response.data.data;
                 this.Adddata=[];
+                this.Adddata.序号=Object.getOwnPropertyNames(this.tableData2).length-1,
                 this.Adddata.表单='施工数据',
                 this.Adddata.一分部=this.tableData2[0].一分部*1+this.tableData2[2].一分部*1;
                 this.Adddata.二分部=this.tableData2[0].二分部*1+this.tableData2[2].二分部*1;
                 this.Adddata.三分部=this.tableData2[0].三分部*1+this.tableData2[2].三分部*1;
                 this.tableData2.push(this.Adddata);
+                var b = [];
+                for (var i in this.tableData2){
+                  var a = {};
+                  var join = 0;
+                  for(let d in this.tableData2[i]){
+                    a[d]=this.tableData2[i][d];
+                  //  console.log(a[Dnas[d]]);
+                    //console.log(this.tableData2[i][d]);
+                    join=this.tableData2[i].一分部*1+this.tableData2[i].二分部*1+this.tableData2[i].三分部*1;
+                  }
+                  a['合计']=join;
+                  b.push(a);
+               }
+               this.tableData2=b;
                })
                .catch(error => {
                 this.$message({
-                  showClose: true,
-                  message: '获取数据失败！',
-                  type: 'error',
-                  duration:10000
+                  showClose: true,//是否显示关闭按钮
+                  message: '获取昨日数据失败！',//显示文字
+                  type: 'error',//提示类型
+                  duration:10000//显示时间（ms）
                 })})
             }
         },
@@ -211,7 +232,7 @@ label="三分部" :show-overflow-tooltip="true">
             setTimeout(() => {
               this.isshow=!this.isshow;
               this.fullscreenLoading=false;//关闭加载动画
-             }, 800);       
+             }, 850);       
         }
     })
   </script>
