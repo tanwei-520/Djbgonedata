@@ -5,7 +5,8 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <script src="./Js/vue.js"></script>
-    <link rel="stylesheet" href="./ElementUi/index.css">
+    <link rel="stylesheet" href="./ElementUi/index.css" />
+	<link rel="icon" href="favicon.ico" />
     <script src="./ElementUi/index.js"></script>
     <script src="./Js/axios.min.js"></script>
     <style type="text/css">
@@ -35,14 +36,15 @@
        }
     </style>
     <title>日报</title>
-
+    <link rel="shortcut icon" type="image/x-icon" href="favicon.ico"/>
 </head>
 <body>
 <!-- 加载动画 -->
 <div id="app"  element-loading-text="拼命加载中"  v-loading.fullscreen.lock="fullscreenLoading" >
     <!-- <button type="button"  v-on:click="getmain" class="el-button el-button--primary">主要按钮1</button>
     <button type="button"  v-on:click="$message.error('获取数据失败！');" class="el-button el-button--primary">主要按钮2</button> -->
-    <p class="cell" style="text-align:center; width: 50%;margin: auto;margin-top: 20px; height: 35px;" >今日数据</p>
+    <p class="cell" style="text-align:center; width: 50%;margin: auto;margin-top: 20px; height: 19px;" >今日数据</p>
+    <p style="color:red; font-size: 10px; text-align: left;width: 50%;margin: auto;">注：目前施工数据=焊接记录+防腐记录</p>
     <el-table
     :data="tableData"
     :header-cell-style="{background:'#eef1f6',color:'#606266',textAlign:'center'}"
@@ -75,10 +77,11 @@ v-for="(item,index) in Dname"
 <p style="text-align:center; width: 50%;margin: auto;margin-top: 20px; height: 35px;">汇总统计</p>
 <textarea v-if="isshow" class="el-textarea__inner"  placeholder="请输入内容" autocomplete="off" style="min-height: 258px; height: 258px;width: 50%; margin: auto; font-size: 16px;border:2px solid #C0C4CC;">
 各位领导，冬季保供工程数字化交付建设进展：
-1、苏里格深度处理总厂检测数据日0条，累计0条；施工数据日0条，累计15条。
-2、第一分项目部检测数据日{{tableData[1].一分部-tableData2[1].一分部}}条，累计{{tableData[1].一分部}}条；施工数据日{{tableData[3].一分部-tableData2[3].一分部}}条，累计{{tableData[3].一分部}}条。
-3、第二分项目部检测数据日{{tableData[1].二分部-tableData2[1].二分部}}条，累计{{tableData[1].二分部}}条；施工数据日{{tableData[3].二分部-tableData2[3].二分部}}条，累计{{tableData[3].二分部}}条。
-4、第三分项目部检测数据日{{tableData[1].三分部-tableData2[1].三分部}}条，累计{{tableData[1].三分部}}条；施工数据日{{tableData[3].三分部-tableData2[3].三分部}}条，累计{{tableData[3].三分部}}条。
+1、苏里格深度处理总厂检测数据日0条，累计0条；施工数据日0条，累计60条。
+2、苏里格深度处理总厂实际焊口1723（道），录入焊口数据559（条），焊口数据录入率：
+3、第一分项目部检测数据日{{tableData[1].一分部-tableData2[1].一分部}}条，累计{{tableData[1].一分部}}条；施工数据日{{tableData[3].一分部-tableData2[3].一分部}}条，累计{{tableData[3].一分部}}条。
+4、第二分项目部检测数据日{{tableData[1].二分部-tableData2[1].二分部}}条，累计{{tableData[1].二分部}}条；施工数据日{{tableData[3].二分部-tableData2[3].二分部}}条，累计{{tableData[3].二分部}}条。
+5、第三分项目部检测数据日{{tableData[1].三分部-tableData2[1].三分部}}条，累计{{tableData[1].三分部}}条；施工数据日{{tableData[3].三分部-tableData2[3].三分部}}条，累计{{tableData[3].三分部}}条。
 总厂：当日采集：检测：0条，施工：0条，累计采集：检测：0条，施工：15条。
 一分部：当日采集：检测：{{tableData[1].一分部-tableData2[1].一分部}}条，施工：{{tableData[3].一分部-tableData2[3].一分部}}条，累计采集：检测：{{tableData[1].一分部}}条，施工：{{tableData[3].一分部}}条。
 二分部：当日采集：检测：{{tableData[1].二分部-tableData2[1].二分部}}条，施工：{{tableData[3].二分部-tableData2[3].二分部}}条，累计采集：检测：{{tableData[1].二分部}}条，施工：{{tableData[3].二分部}}条。
@@ -173,9 +176,9 @@ v-for="(item,index) in Dname"
                   for(let d in this.tableData[i]){
                     a[d]=this.tableData[i][d];
                   //  console.log(a[Dnas[d]]);
-                    //console.log(this.tableData2[i][d]);
-                    join=this.tableData[i].一分部*1+this.tableData[i].二分部*1+this.tableData[i].三分部*1;
+                    //console.log(this.tableData2[i][d]);                   
                   }
+                  join=this.tableData[i].一分部*1+this.tableData[i].二分部*1+this.tableData[i].三分部*1;
                   a['合计']=join;
                   b.push(a);
                }
@@ -211,8 +214,8 @@ v-for="(item,index) in Dname"
                     a[d]=this.tableData2[i][d];
                   //  console.log(a[Dnas[d]]);
                     //console.log(this.tableData2[i][d]);
-                    join=this.tableData2[i].一分部*1+this.tableData2[i].二分部*1+this.tableData2[i].三分部*1;
                   }
+                  join=this.tableData2[i].一分部*1+this.tableData2[i].二分部*1+this.tableData2[i].三分部*1;
                   a['合计']=join;
                   b.push(a);
                }
@@ -230,9 +233,10 @@ v-for="(item,index) in Dname"
         mounted:function(){
             this.getids();        
             setTimeout(() => {
-              this.isshow=!this.isshow;
               this.fullscreenLoading=false;//关闭加载动画
-             }, 850);       
+              this.isshow=!this.isshow;
+             }, 850);
+                    
         }
     })
   </script>
