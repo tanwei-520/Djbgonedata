@@ -75,18 +75,20 @@ v-for="(item,index) in Dname"
 </el-table-column>
 </el-table>
 <p style="text-align:center; width: 50%;margin: auto;margin-top: 20px; height: 35px;">汇总统计</p>
-<textarea v-if="isshow" class="el-textarea__inner"  placeholder="请输入内容" autocomplete="off" style="min-height: 258px; height: 258px;width: 50%; margin: auto; font-size: 16px;border:2px solid #C0C4CC;">
+<div style="text-align:center; margin: 0 auto;">
+ <p style="text-align:center; width: 50%;margin: auto;height: 21px; font-size: 12px;">输入总厂实际焊口数</p>
+ <input type="text" style="width:88px ;text-align: center;"  v-model="shij" class="el-input__inner"></div>
+<textarea v-if="isshow" class="el-textarea__inner"  placeholder="请输入内容" autocomplete="off" style="min-height: 255px; height: 255px;width: 50%; margin: auto; font-size: 16px;border:2px solid #C0C4CC;">
 各位领导，冬季保供工程数字化交付建设进展：
-1、苏里格深度处理总厂检测数据日0条，累计0条；施工数据日0条，累计60条。
-2、苏里格深度处理总厂实际焊口1723（道），录入焊口数据559（条），焊口数据录入率：
+1、苏里格深度处理总厂检测数据日{{tableData[1].总厂-tableData2[1].总厂}}条，累计{{tableData[1].总厂}}条；施工数据日{{tableData[0].总厂-tableData2[0].总厂}}条，累计{{tableData[0].总厂*1+74}}条。
+2、苏里格深度处理总厂实际焊口{{this.shij}}（道），录入焊口数据{{tableData[0].总厂}}（条），焊口数据录入率：{{lv}}%。
 3、第一分项目部检测数据日{{tableData[1].一分部-tableData2[1].一分部}}条，累计{{tableData[1].一分部}}条；施工数据日{{tableData[3].一分部-tableData2[3].一分部}}条，累计{{tableData[3].一分部}}条。
 4、第二分项目部检测数据日{{tableData[1].二分部-tableData2[1].二分部}}条，累计{{tableData[1].二分部}}条；施工数据日{{tableData[3].二分部-tableData2[3].二分部}}条，累计{{tableData[3].二分部}}条。
 5、第三分项目部检测数据日{{tableData[1].三分部-tableData2[1].三分部}}条，累计{{tableData[1].三分部}}条；施工数据日{{tableData[3].三分部-tableData2[3].三分部}}条，累计{{tableData[3].三分部}}条。
-总厂：当日采集：检测：0条，施工：0条，累计采集：检测：0条，施工：15条。
+总厂：当日采集：检测：{{tableData[1].总厂-tableData2[1].总厂}}条，施工：{{tableData[0].总厂-tableData2[0].总厂}}条，累计采集：检测：{{tableData[1].总厂}}条，施工：{{tableData[0].总厂*1+74}}条。
 一分部：当日采集：检测：{{tableData[1].一分部-tableData2[1].一分部}}条，施工：{{tableData[3].一分部-tableData2[3].一分部}}条，累计采集：检测：{{tableData[1].一分部}}条，施工：{{tableData[3].一分部}}条。
 二分部：当日采集：检测：{{tableData[1].二分部-tableData2[1].二分部}}条，施工：{{tableData[3].二分部-tableData2[3].二分部}}条，累计采集：检测：{{tableData[1].二分部}}条，施工：{{tableData[3].二分部}}条。
-三分部：当日采集：检测：{{tableData[1].三分部-tableData2[1].三分部}}条，施工：{{tableData[3].三分部-tableData2[3].三分部}}条，累计采集：检测：{{tableData[1].三分部}}条，施工：{{tableData[3].三分部}}条。
-</textarea>
+三分部：当日采集：检测：{{tableData[1].三分部-tableData2[1].三分部}}条，施工：{{tableData[3].三分部-tableData2[3].三分部}}条，累计采集：检测：{{tableData[1].三分部}}条，施工：{{tableData[3].三分部}}条。</textarea>
 </div>
 </body>
 <script>
@@ -97,16 +99,26 @@ v-for="(item,index) in Dname"
             isshow:false,
             tableData:[],
             tableData2:[],
+            zongJ:[],
+            zongZ:[],
+            shij:0,
+            lv:100,
             dialogVisible:false,
             Adddata:{
-              序号:'',
-              表单:'',
-              一分部:'',
-              二分部:'',
-              三分部:'',
             },
             Dname:[]
         },
+        watch: {
+               shij(val) {
+                 this.lv=this.tableData[0].总厂/this.shij;
+                 if(this.lv<1){
+                  this.lv=this.lv.toFixed(4)*100;
+                 }
+                 else{
+                  this.lv=this.lv.toFixed(2)*100;
+                 }
+              }
+            },
         methods:{
             getmain(){//筛选及获取对象名称（未用
               //this.dialogVisible=true;
@@ -140,6 +152,35 @@ v-for="(item,index) in Dname"
             rowStyle(){
                 return "text-align:center"
             },//表内容居中
+            getzong(){
+              const form = new FormData();
+              var _this=this;
+                form.append("id", "202210052228092798");
+                const options = {
+                                 method: 'POST',
+                                 url: 'https://www.raywn.cn:9455/design//datacenter/ds/get-data-for-use',
+                                 data:form
+                }; 
+               axios.request(options).then(function (responses) {
+                //const that = this;
+                _this.zongJ=responses.data.data;
+               })
+               .catch(function (error) {
+               console.error(error);
+               });
+                const option = {
+                                 method: 'POST',
+                                 url: 'https://www.raywn.cn:9455/design//datacenter/ds/get-data-for-use',
+                                 data:'id=202210172026523696'
+                }; 
+               axios.request(option).then(function (responses) {
+                //const that = this;
+                _this.zongZ=responses.data.data;
+               })
+               .catch(function (error) {
+               console.error(error);
+               });
+            },
             getids(){
               //this.dialogVisible=true;
               const url='https://www.raywn.cn:9455/design//datacenter/ds/get-data-for-use';
@@ -153,6 +194,9 @@ v-for="(item,index) in Dname"
 	           }
 	             ).then(response => { // 得到返回结果数据
                 this.tableData=response.data.data;
+                this.tableData[0].总厂=this.zongJ[1].总厂;
+                this.tableData[1].总厂=this.zongJ[0].总厂;
+                this.tableData[2].总厂=0;
                 this.Adddata=[];
                 this.Adddata.序号=Object.getOwnPropertyNames(this.tableData).length-1,
                 //console.log(Object.getOwnPropertyNames(this.tableData));
@@ -160,6 +204,7 @@ v-for="(item,index) in Dname"
                 this.Adddata.一分部=this.tableData[0].一分部*1+this.tableData[2].一分部*1;
                 this.Adddata.二分部=this.tableData[0].二分部*1+this.tableData[2].二分部*1;
                 this.Adddata.三分部=this.tableData[0].三分部*1+this.tableData[2].三分部*1;
+                this.Adddata.总厂=this.tableData[0].总厂*1+this.tableData[2].总厂*1;
                 this.tableData.push(this.Adddata);
                 var names = Object.create(null);//取对象名称
                 this.tableData.forEach(function (o) {
@@ -178,19 +223,19 @@ v-for="(item,index) in Dname"
                   //  console.log(a[Dnas[d]]);
                     //console.log(this.tableData2[i][d]);                   
                   }
-                  join=this.tableData[i].一分部*1+this.tableData[i].二分部*1+this.tableData[i].三分部*1;
+                  join=this.tableData[i].一分部*1+this.tableData[i].二分部*1+this.tableData[i].三分部*1+this.tableData[i].总厂*1;
                   a['合计']=join;
                   b.push(a);
                }
                this.tableData=b;
                })
-               .catch(error => {
-                this.$message({
-                  showClose: true,
-                  message: '获取今日数据失败！',
-                  type: 'error',
-                  duration:10000
-                })})
+              //  .catch(error => {
+              //   this.$message({
+              //     showClose: true,
+              //     message: '获取今日数据失败！',
+              //     type: 'error',
+              //     duration:10000
+              //   })})
              axios(
 	           {
 	               method:'post',
@@ -199,12 +244,16 @@ v-for="(item,index) in Dname"
 	           }
 	             ).then(response => { // 得到返回结果数据
                 this.tableData2=response.data.data;
+                this.tableData2[0].总厂=this.zongZ[1].总厂;
+                this.tableData2[1].总厂=this.zongZ[0].总厂;
+                this.tableData2[2].总厂=0;
                 this.Adddata=[];
                 this.Adddata.序号=Object.getOwnPropertyNames(this.tableData2).length-1,
                 this.Adddata.表单='施工数据',
                 this.Adddata.一分部=this.tableData2[0].一分部*1+this.tableData2[2].一分部*1;
                 this.Adddata.二分部=this.tableData2[0].二分部*1+this.tableData2[2].二分部*1;
                 this.Adddata.三分部=this.tableData2[0].三分部*1+this.tableData2[2].三分部*1;
+                this.Adddata.总厂=this.tableData2[0].总厂*1+this.tableData2[2].总厂*1;
                 this.tableData2.push(this.Adddata);
                 var b = [];
                 for (var i in this.tableData2){
@@ -215,7 +264,7 @@ v-for="(item,index) in Dname"
                   //  console.log(a[Dnas[d]]);
                     //console.log(this.tableData2[i][d]);
                   }
-                  join=this.tableData2[i].一分部*1+this.tableData2[i].二分部*1+this.tableData2[i].三分部*1;
+                  join=this.tableData2[i].一分部*1+this.tableData2[i].二分部*1+this.tableData2[i].三分部*1+this.tableData2[i].总厂*1;
                   a['合计']=join;
                   b.push(a);
                }
@@ -231,6 +280,7 @@ v-for="(item,index) in Dname"
             }
         },
         mounted:function(){
+            this.getzong();
             this.getids();        
             setTimeout(() => {
               this.fullscreenLoading=false;//关闭加载动画
