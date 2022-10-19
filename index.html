@@ -34,6 +34,9 @@
        .el-table__footer-wrapper td.el-table__cell{
         text-align: center;
        }
+       .el-input__inner{
+        text-align: center;
+       }
     </style>
     <title>日报</title>
     <link rel="shortcut icon" type="image/x-icon" href="favicon.ico"/>
@@ -77,7 +80,12 @@ v-for="(item,index) in Dname"
 <p style="text-align:center; width: 50%;margin: auto;margin-top: 20px; height: 35px;">汇总统计</p>
 <div style="text-align:center; margin: 0 auto;">
  <p style="text-align:center; width: 50%;margin: auto;height: 21px; font-size: 12px;">输入总厂实际焊口数</p>
- <input type="text" style="width:88px ;text-align: center;"  v-model="shij" class="el-input__inner"></div>
+ <el-input
+  placeholder="请输入内容"
+  v-model="shij"
+  clearable
+  style="width:88px ;text-align: center;">
+</el-input>
 <textarea v-if="isshow" class="el-textarea__inner"  placeholder="请输入内容" autocomplete="off" style="min-height: 255px; height: 255px;width: 50%; margin: auto; font-size: 16px;border:2px solid #C0C4CC;">
 各位领导，冬季保供工程数字化交付建设进展：
 1、苏里格深度处理总厂检测数据日{{tableData[1].总厂-tableData2[1].总厂}}条，累计{{tableData[1].总厂}}条；施工数据日{{tableData[0].总厂-tableData2[0].总厂}}条，累计{{tableData[0].总厂*1+74}}条。
@@ -90,6 +98,7 @@ v-for="(item,index) in Dname"
 二分部：当日采集：检测：{{tableData[1].二分部-tableData2[1].二分部}}条，施工：{{tableData[3].二分部-tableData2[3].二分部}}条，累计采集：检测：{{tableData[1].二分部}}条，施工：{{tableData[3].二分部}}条。
 三分部：当日采集：检测：{{tableData[1].三分部-tableData2[1].三分部}}条，施工：{{tableData[3].三分部-tableData2[3].三分部}}条，累计采集：检测：{{tableData[1].三分部}}条，施工：{{tableData[3].三分部}}条。</textarea>
 </div>
+</div>
 </body>
 <script>
     var app=new Vue({
@@ -101,7 +110,7 @@ v-for="(item,index) in Dname"
             tableData2:[],
             zongJ:[],
             zongZ:[],
-            shij:0,
+            shij:'',
             lv:100,
             dialogVisible:false,
             Adddata:{
@@ -110,9 +119,13 @@ v-for="(item,index) in Dname"
         },
         watch: {
                shij(val) {
+                if(this.shij==""){
+                  this.lv=0;
+                  return;
+                }
                  this.lv=this.tableData[0].总厂/this.shij;
                  if(this.lv<1){
-                  this.lv=this.lv.toFixed(4)*100;
+                  this.lv=(this.lv*100).toFixed(2);//toFixed返回的是var类型数据，对数进行四舍五入后再*100会出现问题，62.47会显示62.470000000000006，可先乘再取解决。
                  }
                  else{
                   this.lv=this.lv.toFixed(2)*100;
@@ -154,7 +167,9 @@ v-for="(item,index) in Dname"
             },//表内容居中
             getzong(){
               const form = new FormData();
-              var _this=this;
+              var _this=this;//mounted、created中采用异步调用的，不会顺序执行，直接使用this.赋值，在后一个方法中调用使用的是原始数据。
+              //在请求执行成功后执行回调函数中的内容，回调函数处于其它函数的内部this不会与任何对象绑定，为undefined。
+              //1将指向vue对象的this赋值给外部方法定义的属性，然后在内部方法中使用该属性
                 form.append("id", "202210052228092798");
                 const options = {
                                  method: 'POST',
@@ -206,7 +221,7 @@ v-for="(item,index) in Dname"
                 this.Adddata.三分部=this.tableData[0].三分部*1+this.tableData[2].三分部*1;
                 this.Adddata.总厂=this.tableData[0].总厂*1+this.tableData[2].总厂*1;
                 this.tableData.push(this.Adddata);
-                var names = Object.create(null);//取对象名称
+                var names = Object.create(null);//获取键值对 对象名称
                 this.tableData.forEach(function (o) {
                   Object.keys(o).forEach(function (k) {
                   names[k] = true;
@@ -229,13 +244,13 @@ v-for="(item,index) in Dname"
                }
                this.tableData=b;
                })
-              //  .catch(error => {
-              //   this.$message({
-              //     showClose: true,
-              //     message: '获取今日数据失败！',
-              //     type: 'error',
-              //     duration:10000
-              //   })})
+               .catch(error => {
+                this.$message({
+                  showClose: true,
+                  message: '获取今日数据失败！',
+                  type: 'error',
+                  duration:10000
+                })})
              axios(
 	           {
 	               method:'post',
