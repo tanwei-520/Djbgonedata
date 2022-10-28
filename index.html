@@ -124,12 +124,7 @@ v-for="(item,index) in Dname"
                   return;
                 }
                  this.lv=this.tableData[0].总厂/this.shij;
-                 if(this.lv<1){
-                  this.lv=(this.lv*100).toFixed(2);//toFixed返回的是var类型数据，对数进行四舍五入后再*100会出现问题，62.47会显示62.470000000000006，可先乘再取解决。
-                 }
-                 else{
-                  this.lv=this.lv.toFixed(2)*100;
-                 }
+                 this.lv=(this.lv*100).toFixed(2);//toFixed返回的是var类型数据，对数进行四舍五入后再*100会出现问题，62.47会显示62.470000000000006，可先乘再取解决。
               }
             },
         methods:{
